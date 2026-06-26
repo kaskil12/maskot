@@ -1,0 +1,70 @@
+# MiniKasper 🐾
+
+En desktop-maskot i piksel-art basert på Kasper lærlingen.
+Går rundt på skrivebordet, sier morsomme ting på norsk, og lager trøbbel.
+
+---
+
+## Krav
+
+- Windows 10 / 11
+- Python 3.11+
+- Avhengigheter (installer med pip):
+
+```
+pip install -r requirements.txt
+```
+
+---
+
+## Kjøre applikasjonen
+
+```
+python main.py
+```
+
+---
+
+## Sprite-filer (legg i `assets/`)
+
+Alle PNG-filer bør være piksel-art på 32×32 eller 16×16 piksler
+(de skaleres automatisk opp med faktoren `SPRITE_SCALE` i `config.py`).
+
+| Fil | Animasjonstilstand |
+|---|---|
+| `idle.png` | Stående stille, frame 1 |
+| `idle2.png` | Stående stille, frame 2 |
+| `walk1.png` – `walk4.png` | Gåing (speiles automatisk for venstre retning) |
+| `eat1.png` – `eat3.png` | Spiser markøren |
+| `sleep1.png` – `sleep2.png` | Sover |
+| `dragleft.png` | Drar et vindu mot venstre |
+| `dragright.png` | Drar et vindu mot høyre |
+
+---
+
+## Lydfiler (legg i `sounds/`)
+
+| Fil | Når den spilles |
+|---|---|
+| `click.mp3` | Venstreklikk på maskoten |
+| `footstep1.mp3` – `footstep3.mp3` | Annenhver gangramme |
+| `nom.mp3` | Når maskoten spiser markøren |
+| `yip.mp3` | Når maskoten drar et vindu |
+| `sleep.mp3` | Snorkelyd mens maskoten sover |
+
+---
+
+## Sitat-fil
+
+`quotes.json` inneholder en liste med norske strenger.
+Legg til egne sitater her uten å endre koden.
+
+---
+
+## Konfigurasjon
+
+Alle innstillinger (hastighet, timing, sannsynligheter) finnes i `config.py`.
+
+---
+
+Laget av Kasper — som avskjedsgave til sjefen. 🎉
