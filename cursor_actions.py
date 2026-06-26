@@ -126,8 +126,10 @@ class CursorController:
             import ctypes
             user32 = ctypes.windll.user32
 
-            for _ in range(5):
+            for _ in range(100):
+                pyautogui.moveTo(0, 0) 
                 user32.ShowCursor(False)
+                sleep(0.1)
 
             user32.ClipCursor(None)
 
@@ -142,6 +144,7 @@ class CursorController:
 
             for _ in range(5):
                 user32.ShowCursor(True)
+                pyautogui.moveTo(500, 500) 
 
             user32.ClipCursor(None)
 

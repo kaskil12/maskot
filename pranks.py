@@ -6,15 +6,6 @@ import webbrowser
 import pyautogui
 import win32gui
 import window_control
-from PySide6.QtCore import QTimer
-
-
-def run_in_main_thread(func):
-    try:
-        QTimer.singleShot(0, func)
-    except Exception as e:
-        print("run_in_main_thread failed", e)
-
 
 # ── Google Search Prank ───────────────────────────────────────────────────────
 
@@ -65,15 +56,13 @@ def prank_vscode_type(speech_controller=None):
             return False
 
         if speech_controller:
-            run_in_main_thread(lambda: speech_controller.say("Åpner dokument 👀"))
+            speech_controller.say("Åpner dokument 👀")
 
         pyautogui.hotkey("ctrl", "n")
         time.sleep(0.3)
 
         message = random.choice(_VSCODE_MESSAGES)
-
         pyautogui.typewrite(message, interval=0.04)
-
         time.sleep(0.2)
 
         pyautogui.hotkey("ctrl", "a")
@@ -86,10 +75,9 @@ def prank_vscode_type(speech_controller=None):
         return False
 
 
-# ── Window Drag Prank ─────────────────────────────────────────────────────────
+# ── Targeted Window Drag Prank ────────────────────────────────────────────────
 
 _DRAG_TARGETS = ["explorer", "notepad", "mspaint", "calc", "wordpad"]
-
 _DRAG_AMOUNT = 120
 _OFFSCREEN_LIMIT = 40
 
@@ -114,7 +102,6 @@ def prank_drag_window(on_drag_anim=None, speech_controller=None):
         screen_h = ctypes.windll.user32.GetSystemMetrics(SM_CYSCREEN)
 
         hwnd = None
-
         for target in _DRAG_TARGETS:
             hwnd = window_control.find_window_by_process(target)
             if hwnd:
@@ -124,21 +111,19 @@ def prank_drag_window(on_drag_anim=None, speech_controller=None):
             return False
 
         left, top, right, bottom = window_control.get_window_rect(hwnd)
-
         win_w = right - left
         win_h = bottom - top
 
-        # restore if offscreen
+        # Restore if dragged completely offscreen
         if left < -_OFFSCREEN_LIMIT or right > screen_w + _OFFSCREEN_LIMIT:
-
             safe_x = max(0, min(screen_w - win_w, left))
             safe_y = max(0, min(screen_h - win_h, top))
 
             if on_drag_anim:
-                run_in_main_thread(lambda: on_drag_anim("right" if left < 0 else "left"))
+                on_drag_anim("right" if left < 0 else "left")
 
             if speech_controller:
-                run_in_main_thread(lambda: speech_controller.say("Kom hit! 😤"))
+                speech_controller.say("Kom hit! 😤")
 
             window_control.move_window(hwnd, safe_x, safe_y)
             return True
@@ -154,13 +139,12 @@ def prank_drag_window(on_drag_anim=None, speech_controller=None):
             delta_x = min(_DRAG_AMOUNT, dist_right + _OFFSCREEN_LIMIT)
 
         if on_drag_anim:
-            run_in_main_thread(lambda: on_drag_anim(direction))
+            on_drag_anim(direction)
 
         if speech_controller:
-            run_in_main_thread(lambda: speech_controller.say("*yip*"))
+            speech_controller.say("*yip*")
 
         time.sleep(0.2)
-
         window_control.drag_window(hwnd, delta_x, 0)
         time.sleep(0.4)
         window_control.drag_window(hwnd, -delta_x, 0)
@@ -169,6 +153,62 @@ def prank_drag_window(on_drag_anim=None, speech_controller=None):
 
     except Exception as e:
         print("prank_drag_window failed", e)
+        return False
+
+
+# ── Random Chaos Window Drag Prank ────────────────────────────────────────────
+
+def prank_drag_random_window(on_drag_anim=None, speech_controller=None):
+    """
+    Finds a completely random open visible window on the user's desktop 
+    and gives it an unexpected shove.
+    """
+    try:
+        visible_windows = []
+
+        def enum_windows_callback(hwnd, extra):
+            if win32gui.IsWindowVisible(hwnd):
+                title = win32gui.GetWindowText(hwnd)
+                # Filter out empty titles, taskbar elements, and desktop roots
+                if title and title not in ["Program Manager", "Start", "Taskbar"]:
+                    left, top, right, bottom = window_control.get_window_rect(hwnd)
+                    # Ensure it has a physical presence on screen
+                    if (right - left) > 150 and (bottom - top) > 150:
+                        visible_windows.append(hwnd)
+
+        win32gui.EnumWindows(enum_windows_callback, None)
+
+        if not visible_windows:
+            return False
+
+        # Pick a window entirely at random
+        random_hwnd = random.choice(visible_windows)
+        
+        # Decide direction
+        direction = random.choice(["left", "right"])
+        delta_x = -70 if direction == "left" else 70
+
+        if on_drag_anim:
+            on_drag_anim(direction)
+
+        if speech_controller:
+            speech_controller.say(random.choice([
+                "Denne skal stå her! 🚚",
+                "Flytter på ting! 📦",
+                "Hoppsann! 😮",
+                "Litt til venstre... nei høyre! 📐"
+            ]))
+
+        time.sleep(0.2)
+        # Give it a shove, pause, and drop it
+        window_control.drag_window(random_hwnd, delta_x, 20)
+        time.sleep(0.3)
+        window_control.drag_window(random_hwnd, int(delta_x * 0.5), -10)
+
+        return True
+
+    except Exception as e:
+        print("prank_drag_random_window failed", e)
         return False
 
 

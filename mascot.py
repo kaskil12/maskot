@@ -3,7 +3,7 @@
 import time
 import threading
 from PySide6.QtWidgets import QWidget, QLabel, QApplication
-from PySide6.QtCore import Qt, QTimer, QPoint
+from PySide6.QtCore import Qt, QTimer, QPoint, Signal
 from PySide6.QtGui import QPixmap, QPainter
 
 import config
@@ -21,7 +21,22 @@ _ANNOYANCE_THRESHOLD = 4
 _ANNOYANCE_WINDOW_MS = 3000
 
 
+class _ThreadSafeSpeechProxy:
+    """
+    Lightweight proxy that mimics the SpeechController interface 
+    but safely redirects execution back to the Main UI Thread via Signals.
+    """
+    def __init__(self, signal: Signal):
+        self._signal = signal
+
+    def say(self, text: str):
+        self._signal.emit(text)
+
+
 class MascotWidget(QWidget):
+    # ── Thread-safe Qt Signals ───────────────────────────────────────────────
+    speech_signal = Signal(str)
+    drag_signal = Signal(str)
 
     def __init__(self):
         try:
@@ -41,6 +56,10 @@ class MascotWidget(QWidget):
             self._sounds = SoundPlayer()
             self._animator = Animator(on_frame_changed=self._on_frame_changed)
             self._speech = SpeechController(mascot_widget=self)
+
+            # Connect thread signals to their safe UI slots
+            self.speech_signal.connect(self._speech.say)
+            self.drag_signal.connect(self._handle_drag_anim)
 
             self._movement = MovementController(
                 on_position=self._on_position,
@@ -225,8 +244,9 @@ class MascotWidget(QWidget):
         try:
             if self._sleeping:
                 return
+            proxy_speech = _ThreadSafeSpeechProxy(self.speech_signal)
             threading.Thread(target=pranks.prank_google_search,
-                             args=(self._speech,), daemon=True).start()
+                             args=(proxy_speech,), daemon=True).start()
         except Exception as e:
             print("MascotWidget._prank_google failed", e)
 
@@ -234,8 +254,9 @@ class MascotWidget(QWidget):
         try:
             if self._sleeping:
                 return
+            proxy_speech = _ThreadSafeSpeechProxy(self.speech_signal)
             threading.Thread(target=pranks.prank_vscode_type,
-                             args=(self._speech,), daemon=True).start()
+                             args=(proxy_speech,), daemon=True).start()
         except Exception as e:
             print("MascotWidget._prank_vscode failed", e)
 
@@ -243,8 +264,11 @@ class MascotWidget(QWidget):
         try:
             if self._sleeping:
                 return
+            proxy_speech = _ThreadSafeSpeechProxy(self.speech_signal)
+            safe_drag_cb = lambda direction: self.drag_signal.emit(direction)
+
             threading.Thread(target=pranks.prank_drag_window,
-                             args=(self._handle_drag_anim, self._speech),
+                             args=(safe_drag_cb, proxy_speech),
                              daemon=True).start()
         except Exception as e:
             print("MascotWidget._prank_drag failed", e)
