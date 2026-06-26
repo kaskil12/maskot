@@ -5,41 +5,58 @@ from PySide6.QtWidgets import QApplication
 
 
 def screen_size() -> tuple[int, int]:
-    """Return (width, height) of the primary screen."""
-    screen = QApplication.primaryScreen().availableGeometry()
-    return screen.width(), screen.height()
+    try:
+        """Return (width, height) of the primary screen."""
+        screen = QApplication.primaryScreen().availableGeometry()
+        return screen.width(), screen.height()
+    except:
+        print("screen_size failed")
 
 
 def screen_rect() -> tuple[int, int, int, int]:
-    """Return (x, y, width, height) of the available desktop area."""
-    geo = QApplication.primaryScreen().availableGeometry()
-    return geo.x(), geo.y(), geo.width(), geo.height()
-
+    try:
+        """Return (x, y, width, height) of the available desktop area."""
+        geo = QApplication.primaryScreen().availableGeometry()
+        return geo.x(), geo.y(), geo.width(), geo.height()
+    except:
+        print("screen_rect failed")
 
 def clamp(value: int, lo: int, hi: int) -> int:
-    """Clamp value between lo and hi, inclusive."""
-    return max(lo, min(hi, value))
-
+    try:
+        """Clamp value between lo and hi, inclusive."""
+        return max(lo, min(hi, value))
+    except:
+        print("clamp failed")
 
 def rand_range(lo: float, hi: float) -> float:
-    """Uniform float in [lo, hi]."""
-    return random.uniform(lo, hi)
-
+    try:
+        """Uniform float in [lo, hi]."""
+        return random.uniform(lo, hi)
+    except:
+        print("rand_range failed")
 
 def rand_int_range(lo: int, hi: int) -> int:
-    """Uniform integer in [lo, hi]."""
-    return random.randint(lo, hi)
+    try:
+        """Uniform integer in [lo, hi]."""
+        return random.randint(lo, hi)
+    except:
+        print("rand_int_range failed")
 
 
 def roll(probability: float) -> bool:
-    """Return True with the given probability (0.0–1.0)."""
-    return random.random() < probability
-
+    try:
+        """Return True with the given probability (0.0–1.0)."""
+        return random.random() < probability
+    except:
+        print("roll failed")
 
 def sign(value: float) -> int:
-    """Return 1, -1, or 0 depending on the sign of value."""
-    if value > 0:
-        return 1
-    if value < 0:
-        return -1
-    return 0
+    try:
+        """Return 1, -1, or 0 depending on the sign of value."""
+        if value > 0:
+            return 1
+        if value < 0:
+            return -1
+        return 0
+    except:
+        print("sign failed")

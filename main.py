@@ -5,22 +5,27 @@ import sys
 from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import Qt
 
-# High-DPI support (must be set before QApplication is created)
-QApplication.setHighDpiScaleFactorRoundingPolicy(
-    Qt.HighDpiScaleFactorRoundingPolicy.PassThrough
-)
-
 from mascot import MascotWidget
 
 
 def main():
-    app = QApplication(sys.argv)
-    app.setQuitOnLastWindowClosed(False)   # keep running even if bubble closes
+    try:
+        QApplication.setHighDpiScaleFactorRoundingPolicy(
+            Qt.HighDpiScaleFactorRoundingPolicy.PassThrough
+        )
 
-    mascot = MascotWidget()                # noqa: F841 — kept alive by event loop
+        app = QApplication(sys.argv)
+        app.setQuitOnLastWindowClosed(False)
 
-    sys.exit(app.exec())
+        mascot = MascotWidget()  # kept alive by Qt event loop
+        sys.exit(app.exec())
+
+    except Exception as e:
+        print("main failed", e)
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        print("main (entry) failed", e)
