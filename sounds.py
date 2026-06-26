@@ -2,6 +2,7 @@
 
 import os
 import random
+from time import sleep
 import pygame.mixer as mixer
 import config
 
@@ -10,6 +11,7 @@ class SoundPlayer:
     """Loads all .mp3 assets and exposes simple play() methods."""
 
     def __init__(self):
+        self._last_footstep_time = 0.0
         try:
             mixer.pre_init(frequency=44100, size=-16, channels=2, buffer=512)
             mixer.init()
@@ -58,15 +60,25 @@ class SoundPlayer:
             print("SoundPlayer.play failed", e)
 
     def play_footstep(self):
-        """Play a random footstep sound at the configured footstep volume."""
+        """Play a random footstep sound, ensuring the last one has finished playing."""
         try:
-            choices = ["footstep1", "footstep2", "footstep3"]
+            import time
+            now = time.time()
+            
+            # Cooldown in seconds (0.3 = 300ms). Adjust this to match your sound clip length!
+            cooldown = 0.3 
+            
+            if now - self._last_footstep_time < cooldown:
+                return  # Skip playing if the last footstep sound is still active
+
+            choices = ["footstep1"]
             available = [c for c in choices if c in self._sounds]
             if available:
                 self.play(random.choice(available), config.FOOTSTEP_VOLUME)
+                self._last_footstep_time = now  # Update the timestamp
+                
         except Exception as e:
             print("SoundPlayer.play_footstep failed", e)
-
     def play_loop(self, name: str):
         """Play a sound on infinite loop (e.g. snoring)."""
         try:
