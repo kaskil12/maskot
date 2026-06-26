@@ -52,12 +52,13 @@ def roll(probability: float) -> bool:
     except:
         print("roll failed")
 def get_asset_path(relative_path: str) -> str:
-    """ Get absolute path to resource, works for dev and for PyInstaller """
+    """ Get absolute path to resource, works for local dev and for PyInstaller """
     try:
-        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        # PyInstaller creates a temp folder and stores its path in _MEIPASS
         base_path = sys._MEIPASS
     except AttributeError:
-        base_path = os.path.abspath(".")
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        # If utils.py is in the root, base_path points to root.
 
     return os.path.join(base_path, relative_path)
 def sign(value: float) -> int:

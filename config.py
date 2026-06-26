@@ -2,12 +2,12 @@
 # Change values here to tune behavior without touching other code.
 
 import os
-
+import utils
 # ── Paths ────────────────────────────────────────────────────────────────────
 BASE_DIR    = os.path.dirname(os.path.abspath(__file__))
-ASSETS_DIR  = os.path.join(BASE_DIR, "assets")
-SOUNDS_DIR  = os.path.join(BASE_DIR, "sounds")
-QUOTES_FILE = os.path.join(BASE_DIR, "quotes.json")
+ASSETS_DIR  = utils.get_asset_path("assets")
+SOUNDS_DIR  = utils.get_asset_path("sounds")
+QUOTES_FILE = utils.get_asset_path("quotes.json")
 
 # ── Movement ─────────────────────────────────────────────────────────────────
 WALK_SPEED       = 3          # pixels moved per movement tick

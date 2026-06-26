@@ -45,10 +45,20 @@ _GOOGLE_QUERIES = [
     "hvor mye kaffe er for mye",
     "hvorfor virker printere aldri",
     "kan man leve på energidrikk",
-    "hvorfor er det alltid DNS",
+    "hvor mange fingre på en hånd",
     "hvordan late som man jobber",
     "hva gjør en IT-tekniker egentlig",
     "hvordan overleve uten lærling",
+    "toyota mr2 mk2",
+    "yard gnomes",
+    "Kasper Kilde er kul",
+    "im batman",
+    "peppes pizza til IKT",
+    "hjulene på bussen de går rundt og rundt",
+    "hvor mange hjul på en buss",
+    "cool bald people",
+    "the goat",
+    "kasper kilde hvor?"
 ]
 
 def prank_google_search(speech_controller=None, **kwargs):
@@ -69,8 +79,9 @@ def prank_google_search(speech_controller=None, **kwargs):
 _VSCODE_MESSAGES = [
     'print("Hei, sjef! 😄")',
     '# TODO: finn en ny lærling',
-    'print("Alt er DNS.")',
+    'print("Hello world)',
     '# Jeg var her. - Kasper',
+    'Jobber du?',
 ]
 
 def prank_vscode_type(speech_controller=None, **kwargs):
